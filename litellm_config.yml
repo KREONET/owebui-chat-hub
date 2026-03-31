@@ -79,26 +79,6 @@ model_list:
   # BizRouter: https://bizrouter.ai/models
 
 
-  #### Elice Models ####
-
-  - model_name: elice-eliceai-helpy-pro-dragon
-    litellm_params:
-      <<: [*elice, *thinking]
-      model: openai/eliceai/helpy-pro-dragon
-      api_base: https://mlapi.run/CHANGE_ME/v1
-    owebui_params:
-      vendor: Elice
-      api_provider: Elice Cloud
-      model: helpy-pro-dragon
-      release_date: ""
-      name: Helpy Pro Dragon
-      description: 한국어 특화 고성능 AI모델, OpenAI o1 수준의 심층 추론
-      info_url: https://elice.io/ko/cloud/model-library/bc78f7c2-2a81-4a69-a413-32bb01f0804a
-      logo: images/elice-helpy.png
-      meta:
-        capabilities:
-          vision: false
-
 
   #### LG AI Models in Elice Cloud ####
 
