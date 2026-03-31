@@ -67,11 +67,21 @@ model_list:
   # Google Gemini: 
   #    - https://gemini.google/release-notes/
   #    - https://ai.google.dev/gemini-api/docs/models
-  # OpenAI: https://help.openai.com/en?q=release%20note
-  # Anthropic Claude: https://support.claude.com/en/?q=release+notes
-  # Perplexity: https://docs.perplexity.ai/docs/resources/changelog
-  # NAVER CLOVA: https://guide.ncloud-docs.com/docs/clovastudio-releasenote
-  # LG AI: https://huggingface.co/LGAI-EXAONE
+  #    - https://ai.google.dev/gemini-api/docs/deprecations
+  # OpenAI: 
+  #    - https://help.openai.com/en?q=release%20note
+  #    - https://developers.openai.com/api/docs/deprecations
+  # Anthropic Claude: 
+  #    - https://support.claude.com/en/?q=release+notes
+  #    - https://platform.claude.com/docs/en/about-claude/model-deprecations
+  # Perplexity: 
+  #    - https://docs.perplexity.ai/docs/resources/changelog
+  # NAVER CLOVA: 
+  #    - https://guide.ncloud-docs.com/docs/clovastudio-releasenote
+  #    - https://guide.ncloud-docs.com/docs/en/clovastudio-releasenote
+  # LG AI: 
+  #    - https://huggingface.co/LGAI-EXAONE
+  #    - https://github.com/LG-AI-EXAONE
 
 
   #### Model List for API Providers ####
