@@ -1,0 +1,555 @@
+#### 파라미터 템플릿 ####
+x-params:
+  # 빠른 모델
+  fast: &fast
+    timeout: 60
+    stream_timeout: 10
+
+  fast_2x: &fast_2x
+    timeout: 120
+    stream_timeout: 20
+
+  # 추론 모델
+  _thinking-base: &thinking-base
+    thinking: {"type": "enabled", "budget_tokens": 1024}
+    merge_reasoning_content_in_choices: true
+
+  thinking: &thinking
+    <<: *thinking-base
+    timeout: 180
+    stream_timeout: 20
+
+  thinking_3x: &thinking_3x
+    <<: *thinking-base
+    timeout: 540
+    stream_timeout: 60
+
+  # 이미지 생성 모델
+  fast-image: &fast-image
+    timeout: 300
+
+  slow-image: &slow-image
+    timeout: 600
+
+  # Elice 자격증명
+  elice: &elice
+    api_key: os.environ/ELICE_API_KEY
+
+  # BizRouter 자격증명
+  bizrouter: &bizrouter
+    api_base: https://api.bizrouter.ai/v1
+    api_key: os.environ/BIZROUTER_API_KEY
+
+  # Google Cloud Platform 자격증명
+  gcp: &gcp
+    api_key: os.environ/GEMINI_API_KEY
+
+  # NAVER CLOVA 자격증명
+  naver: &naver
+    api_base: https://clovastudio.stream.ntruss.com/v1/openai
+    api_key: os.environ/NAVER_OPENAI_API_KEY
+
+  # AWS Bedrock 자격증명
+  aws-creds: &aws-creds
+    aws_access_key_id: os.environ/AWS_ACCESS_KEY_ID
+    aws_secret_access_key: os.environ/AWS_SECRET_ACCESS_KEY
+
+  # Azure OpenAI 자격증명
+  azure-us: &azure-us
+    api_base: os.environ/AZURE_US_OPENAI_ENDPOINT
+    api_version: 2024-12-01-preview
+    api_key: os.environ/AZURE_US_OPENAI_API_KEY
+
+
+model_list:
+
+  #### Release Notes of Vendors ####
+  # Google Gemini: 
+  #    - https://gemini.google/release-notes/
+  #    - https://ai.google.dev/gemini-api/docs/models
+  # OpenAI: https://help.openai.com/en?q=release%20note
+  # Anthropic Claude: https://support.claude.com/en/?q=release+notes
+  # Perplexity: https://docs.perplexity.ai/docs/resources/changelog
+  # NAVER CLOVA: https://guide.ncloud-docs.com/docs/clovastudio-releasenote
+  # LG AI: https://huggingface.co/LGAI-EXAONE
+
+
+  #### Model List for API Providers ####
+  # Elice: https://elice.io/ko/cloud/model-library
+  # BizRouter: https://bizrouter.ai/models
+
+
+  #### Elice Models ####
+
+  - model_name: elice-eliceai-helpy-pro-dragon
+    litellm_params:
+      <<: [*elice, *thinking]
+      model: openai/eliceai/helpy-pro-dragon
+      api_base: https://mlapi.run/CHANGE_ME/v1
+    owebui_params:
+      vendor: Elice
+      api_provider: Elice Cloud
+      model: helpy-pro-dragon
+      release_date: ""
+      name: Helpy Pro Dragon
+      description: 한국어 특화 고성능 AI모델, OpenAI o1 수준의 심층 추론
+      info_url: https://elice.io/ko/cloud/model-library/bc78f7c2-2a81-4a69-a413-32bb01f0804a
+      logo: images/elice-helpy.png
+      meta:
+        capabilities:
+          vision: false
+
+
+  #### LG AI Models in Elice Cloud ####
+
+  - model_name: elice-lgai-k-exaone-236b-a23b
+    litellm_params:
+      <<: [*elice, *thinking]
+      model: openai/lgai-exaone/k-exaone-236b-a23b
+      api_base: https://mlapi.run/CHANGE_ME/v1
+      # LG AI Research 권장 파라미터: https://huggingface.co/LGAI-EXAONE/K-EXAONE-236B-A23B
+      temperature: 1.0
+      top_p: 0.95
+      presence_penalty: 0.0
+    owebui_params:
+      vendor: LG AI
+      api_provider: Elice Cloud
+      model: k-exaone-236b-a23b
+      release_date: 2025-12-31
+      name: K-EXAONE-236B-A23B
+      description: Mixture-of-Experts(MoE) 구조로 개발된 236B 파라미터의 규모 한국어 특화 파운데이션 모델
+      info_url: 
+        - https://elice.io/ko/cloud/model-library/db494b41-8a63-4c52-b769-082755c7ec96
+        - https://huggingface.co/LGAI-EXAONE/K-EXAONE-236B-A23B
+        - https://github.com/LG-AI-EXAONE
+      logo: images/lg-exaone.png
+      meta:
+        capabilities:
+          vision: false
+
+
+  #### OpenAI Models in Elice Cloud ####
+
+  - model_name: elice-openai-gpt-5.2
+    litellm_params:
+      <<: [*elice, *thinking]
+      model: openai/openai/gpt-5.2
+      api_base: https://mlapi.run/CHANGE_ME/v1
+    owebui_params:
+      vendor: OpenAI
+      api_provider: Elice Cloud
+      model: gpt-5.2
+      release_date: 2025-12-11
+      deprecated_date: 2026-02-14
+      retirement_date: 2026-04-15
+      name: GPT 5.2
+      description: 초월적인 추론 능력과 전문 지식 업무 수행에 특화된 플래그십 모델
+      info_url: https://elice.io/ko/cloud/model-library/1d1d8f2e-a255-4d6d-9177-c43362887502
+      logo: images/openai-gpt.png
+      meta:
+        capabilities:
+          vision: true
+
+  - model_name: elice-openai-gpt-5-mini
+    litellm_params:
+      <<: [*elice, *fast]
+      model: openai/openai/gpt-5-mini
+      api_base: https://mlapi.run/CHANGE_ME/v1
+    owebui_params:
+      vendor: OpenAI
+      api_provider: Elice Cloud
+      model: gpt-5-mini
+      release_date: 2025-08-13
+      deprecated_date: 2026-08-07
+      retirement_date: 2027-02-06
+      name: GPT 5 Mini
+      description: 명확한 작업에 최적화된 빠르고 경제적인 비용의 소형 모델
+      info_url: https://elice.io/ko/cloud/model-library/4a791550-53e9-422a-91d2-41a7f77b5bdf
+      logo: images/openai-gpt.png
+      meta:
+        capabilities:
+          vision: true
+
+  - model_name: elice-openai-gpt-oss-20b
+    litellm_params:
+      <<: [*elice, *thinking]
+      model: openai/openai/gpt-oss-20b
+      api_base: https://mlapi.run/CHANGE_ME/v1
+    owebui_params:
+      vendor: OpenAI
+      api_provider: Elice Cloud
+      model: gpt-oss-20b
+      release_date: 2025-08-05
+      name: GPT OSS 20B
+      description: 빠른 추론과 광범위한 활용성을 제공하는 210억 오픈 웨이트 MoE 모델
+      logo: images/openai-gpt.png
+      meta:
+        capabilities:
+          vision: false
+
+
+  #### Claude Models in Elice Cloud ####
+
+  - model_name: elice-anthropic-claude-opus-4-5
+    litellm_params:
+      <<: [*elice, *thinking_3x]
+      model: openai/anthropic/claude-opus-4-5
+      api_base: https://mlapi.run/CHANGE_ME/v1
+    owebui_params:
+      vendor: Anthropic
+      api_provider: Elice Cloud
+      model: claude-opus-4-5
+      release_date: 2025-11-24
+      deprecated_date: 2026-11-24
+      retirement_date: 2027-01-24
+      name: Claude Opus 4.5
+      description: 코딩, 에이전트 구축 등 다방면에서 세계 최고 수준의 성능을 제공하는 모델
+      info_url: https://elice.io/ko/cloud/model-library/bc94812a-5426-4ffa-934b-b03b19d0bea5
+      logo: images/anthropic-claude.png
+      meta:
+        capabilities:
+          vision: true
+
+  - model_name: elice-anthropic-claude-sonnet-4-5
+    litellm_params:
+      <<: [*elice, *thinking]
+      model: openai/anthropic/claude-sonnet-4-5
+      api_base: https://mlapi.run/CHANGE_ME/v1
+    owebui_params:
+      vendor: Anthropic
+      api_provider: Elice Cloud
+      model: claude-sonnet-4-5
+      release_date: 2025-09-29
+      deprecated_date: 2026-09-29
+      retirement_date: 2026-11-29
+      name: Claude Sonnet 4.5
+      description: 복잡한 에이전트 구축 및 코딩 작업에 가장 강력 고성능 모델
+      info_url: https://elice.io/ko/cloud/model-library/bcb7e0a9-e2f3-4a07-a49c-28f3f8d07eb2
+      logo: images/anthropic-claude.png
+      meta:
+        capabilities:
+          vision: true
+
+  - model_name: elice-anthropic-claude-haiku-4-5
+    litellm_params:
+      <<: [*elice, *fast]
+      model: openai/anthropic/claude-haiku-4-5
+      api_base: https://mlapi.run/CHANGE_ME/v1
+    owebui_params:
+      vendor: Anthropic
+      api_provider: Elice Cloud
+      model: claude-haiku-4-5
+      release_date: 2025-10-15
+      deprecated_date: 2026-10-15
+      retirement_date: 2026-12-15
+      name: Claude Haiku 4.5
+      description: Sonnet 수준의 코딩 성능을 유지하면서 더 저렴하고 빠른 초경량 소형 모델
+      info_url: https://elice.io/ko/cloud/model-library/7579722b-0212-4116-9d5e-2497be84d188
+      logo: images/anthropic-claude.png
+      meta:
+        capabilities:
+          vision: true
+
+
+  #### Perplexity Models in BizRouter ####
+
+  - model_name: bizrouter-perplexity-sonar-reasoning-pro
+    litellm_params:
+      <<: [*bizrouter, *thinking_3x]
+      model: openai/perplexity/sonar-reasoning-pro
+    owebui_params:
+      vendor: Perplexity
+      api_provider: BizRouter
+      model: perplexity-sonar-reasoning-pro
+      release_date: 2025-03-07
+      name: Perplexity Sonar Reasoning Pro
+      description: 최신 웹 검색 기능과 고급 심층 추론 능력을 결합한 최고 성능 리서치 웹 검색 모델
+      logo: images/perplexity.png
+      meta:
+        capabilities:
+          vision: false
+
+  - model_name: bizrouter-perplexity-sonar-deep-research
+    litellm_params:
+      <<: [*bizrouter, *thinking_3x]
+      model: openai/perplexity/sonar-deep-research
+    owebui_params:
+      vendor: Perplexity
+      api_provider: BizRouter
+      model: perplexity-sonar-deep-research
+      release_date: 2025-01-28
+      name: Perplexity Sonar Deep Research
+      description: 장문 컨텍스트 분석과 깊이 있는 논문급 리서치에 최적화된 웹 검색 모델
+      logo: images/perplexity.png
+      meta:
+        capabilities:
+          vision: false
+
+  - model_name: bizrouter-perplexity-sonar-pro
+    litellm_params:
+      <<: [*bizrouter, *thinking]
+      model: openai/perplexity/sonar-pro
+    owebui_params:
+      vendor: Perplexity
+      api_provider: BizRouter
+      model: perplexity-sonar-pro
+      release_date: 2025-01-29
+      name: Perplexity Sonar Pro
+      description: 전문적인 웹 검색 및 종합 분석 기능이 탑재된 다목적 고성능 모델
+      logo: images/perplexity.png
+      meta:
+        capabilities:
+          vision: false
+
+  - model_name: bizrouter-perplexity-sonar
+    litellm_params:
+      <<: [*bizrouter, *thinking]
+      model: openai/perplexity/sonar
+    owebui_params:
+      vendor: Perplexity
+      api_provider: BizRouter
+      model: perplexity-sonar
+      release_date: 2025-01-29
+      name: Perplexity Sonar
+      description: 실시간 최신 정보 검색에 강점을 가진 빠르고 효율적인 기본 웹 검색 모델
+      logo: images/perplexity.png
+      meta:
+        capabilities:
+          vision: false
+
+
+  #### NAVER CLOVA Models ####
+
+  - model_name: naver-clova-hcx-007
+    litellm_params:
+      <<: [*naver, *thinking]
+      model: openai/HCX-007
+    owebui_params:
+      vendor: NAVER
+      api_provider: NAVER Cloud
+      model: hcx-007
+      release_date: 2025-07-29
+      name: HCX 007
+      description: 네이버의 한국어 특화 초거대 고성능 AI 모델 (명령 수행 특화)
+      info_url: https://guide.ncloud-docs.com/docs/clovastudio-model
+      logo: images/naver-clova.png
+      meta:
+        capabilities:
+          vision: false
+
+  - model_name: naver-clova-hcx-005
+    litellm_params:
+      <<: [*naver, *fast_2x]
+      model: openai/HCX-005
+    owebui_params:
+      vendor: NAVER
+      api_provider: NAVER Cloud
+      model: hcx-005
+      release_date: 2024-08-27
+      name: HCX 005
+      description: 성능과 비용 간 균형 잡힌 다목적 대형 언어 모델
+      info_url: https://guide.ncloud-docs.com/docs/clovastudio-model
+      logo: images/naver-clova.png
+      meta:
+        capabilities:
+          vision: false
+
+  - model_name: naver-clova-hcx-dash-002
+    litellm_params:
+      <<: [*naver, *fast]
+      model: openai/HCX-DASH-002
+    owebui_params:
+      vendor: NAVER
+      api_provider: NAVER Cloud
+      model: hcx-dash-002
+      release_date: 2024-04-26
+      name: HCX DASH 002
+      description: 빠른 응답 속도와 저렴한 비용이 강점인 경량화 한국어 AI 모델
+      info_url: https://guide.ncloud-docs.com/docs/clovastudio-model
+      logo: images/naver-clova.png
+      meta:
+        capabilities:
+          vision: false
+
+
+  #### Google Gemini Models ####
+
+  - model_name: google-gemini-3.1-pro-preview
+    litellm_params:
+      <<: [*gcp, *thinking]
+      model: gemini/gemini-3.1-pro-preview
+    owebui_params:
+      vendor: Google
+      api_provider: Google Cloud
+      model: gemini-3.1-pro
+      release_date: 2026-02-19
+      name: Gemini 3.1 Pro
+      description: 구글의 차세대 고성능 멀티모달 추론 및 복잡한 문제 해결 모델 (최신 Preview)
+      info_url: https://ai.google.dev/gemini-api/docs/models/gemini-3.1-pro-preview?hl=ko
+      logo: images/google-gemini.png
+      meta:
+        capabilities:
+          vision: true
+
+  - model_name: google-gemini-3.1-flash-lite-preview
+    litellm_params:
+      <<: [*gcp, *fast]
+      model: gemini/gemini-3.1-flash-lite-preview
+    owebui_params:
+      vendor: Google
+      api_provider: Google Cloud
+      model: gemini-3.1-flash-lite
+      release_date: 2026-03-03
+      name: Gemini 3.1 Flash Lite
+      description: 효율성과 지능이 결합되어 대규모 트래픽에 최적화된 초경량 멀티모달 모델 (최신 Preview)
+      info_url: https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-lite-preview?hl=ko
+      logo: images/google-gemini.png
+      meta:
+        capabilities:
+          vision: true
+
+
+  #### Google Gemini Image Generation Models ####
+  # API 가이드라인 반영
+  # https://help.apiyi.com/ko/nano-banana-pro-api-timeout-settings-4k-image-ko.html
+
+  - model_name: google-gemini-3-pro-image-preview
+    litellm_params:
+      <<: [*gcp, *slow-image]
+      model: gemini/gemini-3-pro-image-preview
+    model_info:
+      mode: image_generation
+    owebui_params:
+      vendor: Google
+      api_provider: Google Cloud
+      model: gemini-3-pro-image
+      release_date: 2025-11-18
+      deprecated_date: 2026-03-09
+      retirement_date: 2026-03-26
+      name: Gemini 3 Pro Image
+      description: 최고 품질 프리미엄 이미지 생성 모델
+      info_url: https://ai.google.dev/gemini-api/docs/models/gemini-3-pro-image-preview?hl=ko
+      logo: images/google-gemini-banana.png
+      meta:
+        capabilities:
+          image_generation: true
+          builtin_tools: false
+        defaultFeatureIds: 
+          - image_generation
+
+
+  #### Claude Models in AWS Bedrock South Korea region ####
+  # 2025-10-14 이후 리셀러 계정과 연동된 AWS Bedrock 은 신규 Claude 모델 사용 불가, 기존에 허용한 모델만 가능
+  # https://aws.amazon.com/ko/blogs/apn/amazon-bedrock-now-available-for-partner-resale/
+
+  - model_name: aws-claude-sonnet-4
+    litellm_params:
+      <<: [*aws-creds, *thinking]
+      model: bedrock/apac.anthropic.claude-sonnet-4-20250514-v1:0
+      aws_region_name: "ap-northeast-2"
+    owebui_params:
+      vendor: Anthropic
+      api_provider: Amazon Web Services
+      model: claude-sonnet-4
+      release_date: 2025-05-14
+      name: Claude Sonnet 4
+      description: 코딩 및 복잡한 에이전트 구축에 최적화된 성능 최고 수준 모델
+      logo: images/anthropic-claude.png
+      meta:
+        capabilities:
+          vision: true
+
+
+  #### OpenAI Models in Azure US region ####
+
+  - model_name: azure-gpt-5.2-chat
+    litellm_params:
+      <<: [*azure-us, *thinking]
+      model: azure/gpt-5.2-chat
+      api_version: 2024-12-01-preview
+    owebui_params:
+      vendor: OpenAI
+      api_provider: Microsoft Azure
+      model: gpt-5.2-chat
+      release_date: 2025-12-11
+      deprecated_date: 2026-02-14
+      retirement_date: 2026-04-15
+      name: GPT 5.2 Chat
+      description: 최상위 수준의 논리적 추론 및 복잡한 문제 해결 능력을 갖춘 플래그십 모델
+      logo: images/openai-gpt.png
+      meta:
+        capabilities:
+          vision: true
+
+  - model_name: azure-gpt-5.3-chat
+    litellm_params:
+      <<: [*azure-us, *thinking]
+      model: azure/gpt-5.3-chat
+      api_version: 2024-12-01-preview
+    owebui_params:
+      vendor: OpenAI
+      api_provider: Microsoft Azure
+      model: gpt-5.3-chat
+      release_date: 2026-03-04
+      deprecated_date: 2026-06-01
+      retirement_date: 2026-08-01
+      name: GPT 5.3 Chat
+      description: 높은 예측 가능성과 맥락 파악 능력을 갖춘 엔터프라이즈 최적화 플래그십 모델
+      logo: images/openai-gpt.png
+      meta:
+        capabilities:
+          vision: true
+
+  - model_name: azure-gpt-5-mini
+    litellm_params:
+      <<: [*azure-us, *fast]
+      model: azure/gpt-5-mini
+      api_version: 2024-12-01-preview
+    owebui_params:
+      vendor: OpenAI
+      api_provider: Microsoft Azure
+      model: gpt-5-mini
+      release_date: 2025-08-13
+      deprecated_date: 2026-08-07
+      retirement_date: 2027-02-06
+      name: GPT 5 Mini
+      description: 명확한 작업에 최적화된 빠르고 경제적인 비용의 소형 모델
+      logo: images/openai-gpt.png
+      meta:
+        capabilities:
+          vision: true
+
+
+#### LiteLLM 서버 설정 ####
+litellm_settings:
+  num_retries: 5
+  request_timeout: 180
+  allowed_fails: 3
+  cooldown_time: 30
+  callbacks: ["prometheus", "perplexity_citation_callback.proxy_handler_instance", "elice_agent_handler.proxy_handler_instance"]
+  drop_params: true
+
+
+#### Open WebUI 모델 기본 설정 ####
+owebui_default_model_meta:
+  capabilities:
+    file_context: true
+    vision: true
+    file_upload: true
+    web_search: false
+    image_generation: false
+    code_interpreter: false
+    citations: true
+    status_updates: true
+    usage: true
+    builtin_tools: true
+  builtinTools:
+    time: true
+    memory: true
+    chats: true
+    notes: true
+    knowledge: true
+    channels: true
+    web_search: false
+    image_generation: false
+    code_interpreter: false

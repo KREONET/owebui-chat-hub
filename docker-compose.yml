@@ -1,0 +1,136 @@
+x-service-defaults: &service-defaults
+  restart: always
+  env_file:
+    - .env
+  logging:
+    driver: "json-file"
+    options:
+      max-size: "50m"
+      max-file: "5"
+      compress: "true"
+
+services:
+  # role: 웹 프론트엔드
+  # repo: https://github.com/open-webui/open-webui
+  # version: v0.8.8
+  # release_date: 2026-03-02
+  # info: https://github.com/open-webui/open-webui/pkgs/container/open-webui/713950087?tag=v0.8.8
+  # image: ghcr.io/open-webui/open-webui:v0.8.8
+  owebui:
+    <<: *service-defaults
+    image: ghcr.io/open-webui/open-webui:v0.8.8
+    container_name: owebui
+    init: true
+    ports:
+      - 8080:8080
+    volumes:
+      - owebui:/app/backend/data
+    environment:
+      WEBUI_NAME: ${OWEBUI_NAME}
+      OPENAI_API_BASE_URLS: "http://litellm:4000/v1;"
+      OPENAI_API_KEYS: "${LITELLM_MASTER_KEY};"
+      DATABASE_URL: "postgresql://${OWEBUI_DB_USER}:${OWEBUI_DB_PASS}@owebui_db:5432/${OWEBUI_DB_NAME}"
+
+  # role: 사용자 데이터, 채팅 내역 등 저장
+  # repo: https://hub.docker.com/_/postgres
+  # version: 16
+  # image: postgres:16
+  owebui_db:
+    <<: *service-defaults
+    image: postgres:16
+    container_name: owebui_db
+    volumes:
+      - owebui_db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: ${OWEBUI_DB_NAME}
+      POSTGRES_USER: ${OWEBUI_DB_USER}
+      POSTGRES_PASSWORD: ${OWEBUI_DB_PASS}
+
+  # role: LLM API 프록시
+  # repo: https://github.com/BerriAI/litellm
+  # version: v1.81.14-stable
+  # release_date: 2026-03-04
+  # info: https://github.com/BerriAI/litellm/pkgs/container/litellm/715976121?tag=v1.81.14-stable
+  # image: ghcr.io/berriai/litellm:v1.81.14-stable
+  litellm:
+    <<: *service-defaults
+    image: ghcr.io/berriai/litellm:v1.81.14-stable
+    container_name: litellm
+    init: true
+    ports:
+      - 4000:4000
+    volumes:
+      - ./litellm_config.yml:/app/config.yml
+      - ./perplexity_citation_callback.py:/app/perplexity_citation_callback.py
+    environment:
+      DATABASE_URL: "postgresql://llmproxy:${LITELLM_DB_PASSWORD}@litellm_db:5432/litellm"
+      STORE_MODEL_IN_DB: "True"
+    command: ["--config", "/app/config.yml"]
+    depends_on:
+      litellm_db:
+        condition: service_healthy
+
+  # role: LLM API 프록시 데이터, 로그 등 저장
+  # repo: https://hub.docker.com/_/postgres
+  # version: 16
+  # image: postgres:16
+  litellm_db:
+    <<: *service-defaults
+    image: postgres:16
+    container_name: litellm_db
+    volumes:
+      - litellm_db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: litellm
+      POSTGRES_USER: llmproxy
+      POSTGRES_PASSWORD: ${LITELLM_DB_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d litellm -U llmproxy"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # role: LLM API 프록시 메트릭(통계) 등 저장
+  # repo: https://hub.docker.com/r/prom/prometheus
+  # version: latest
+  # image: prom/prometheus
+  litellm_prom:
+    <<: *service-defaults
+    image: prom/prometheus
+    container_name: litellm_prom
+    ports:
+      - 9090:9090
+    volumes:
+      - litellm_prom:/prometheus
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=365d'
+
+  # 검색엔진을 활성화 할 경우 searxng 과 관련된 주석을 해제
+  # role: 웹 검색 엔진
+  # repo: https://github.com/searxng/searxng
+  # info: https://hub.docker.com/r/searxng/searxng
+  # version: latest
+  # default_config: https://github.com/searxng/searxng/blob/master/searx/settings.yml
+  # image: searxng/searxng
+  # searxng:
+  #   <<: *service-defaults
+  #   image: searxng/searxng
+  #   container_name: searxng
+  #   init: true
+  #   ports:
+  #     - 8090:8080
+  #   volumes:
+  #     - ./searxng_settings.yml:/usr/local/searxng/searx/settings.yml
+  #     - searxng:/etc/searxng
+  #     - searxng_cache:/var/cache/searxng
+
+volumes:
+  owebui:
+  owebui_db:
+  litellm_db:
+  litellm_prom:
+  # searxng:
+  # searxng_cache:
